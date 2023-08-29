@@ -8,15 +8,11 @@ app = Flask(__name__)
 def testing():
     return make_response(json.dumps({'success':True}), 200)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
     return render_template("index.html"), 200
 
-@app.route('/favicon.ico') 
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-@app.route("/devices")
+@app.route("/devices", methods=["GET"])
 def list_devices():
     return make_response("device 1, device 2", 200)
 
@@ -39,6 +35,10 @@ def not_found(error):
 @app.errorhandler(405)
 def method_not_allowed(error):
     return render_template("error.html", error_code=405, error_text="Method Not Allowed"), 405
+
+@app.route('/favicon.ico') 
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 if __name__ == "__main__":
     app.run(debug=True)
