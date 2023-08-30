@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, make_response, send_from_directory
-import uuid, json
+from helpers import PickleDataManager, get_guid
+import json
 import os
 
 app = Flask(__name__)
@@ -14,10 +15,14 @@ def home():
 
 @app.route("/devices", methods=["GET"])
 def list_devices():
-    return make_response("device 1, device 2", 200)
+    p = PickleDataManager("devices.pickle")
+    return make_response(p.get_data(), 200)
 
 @app.route("/register", methods=["POST"])
 def register():
+    p = PickleDataManager("devices.pickle")
+    guid = str(get_guid())
+    p.save_data(guid)
     return make_response(json.dumps({'success':True}), 200, {'ContentType':'application/json'})
 
 @app.route("/issuetask", methods=["POST"])
