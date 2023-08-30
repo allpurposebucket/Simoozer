@@ -1,11 +1,12 @@
 import pickle
 import uuid
+from typing import cast
 
 class PickleDataManager:
     def __init__(self, filename):
         self.filename = filename
 
-    def get_data(self):
+    def get_devices(self):
         data = []
         try:
             with open(self.filename, 'rb') as f:
@@ -13,12 +14,26 @@ class PickleDataManager:
                     try:
                         obj = pickle.load(f)
                         data.append(obj)
-                        print(data)
                     except EOFError:
                         break
         except FileNotFoundError:
             print("File not found")
         return data
+    
+    def get_device(self, guid):
+        data = []
+        try:
+            with open(self.filename, 'rb') as f:
+                while True:
+                    try:
+                        obj = pickle.load(f)
+                        if str(obj.guid) == guid:
+                            return obj
+                        data.append(obj)
+                    except EOFError:
+                        break
+        except FileNotFoundError:
+            print("File not found")
 
     def save_data(self, data: any):
         with open(self.filename, 'ab') as f:
