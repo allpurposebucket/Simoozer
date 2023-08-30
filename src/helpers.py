@@ -1,10 +1,10 @@
 import pickle
 import uuid
-from typing import cast
+from config import path_prefix
 
 class PickleDataManager:
     def __init__(self, filename):
-        self.filename = filename
+        self.filename = path_prefix + filename
 
     def get_devices(self):
         data = []
