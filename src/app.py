@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, make_response, send_from_directory
 from helpers import PickleDataManager, get_guid
+from device import Device
 import json
 import os
 
@@ -16,22 +17,36 @@ def home():
 @app.route("/devices", methods=["GET"])
 def list_devices():
     p = PickleDataManager("devices.pickle")
-    return make_response(p.get_data(), 200)
+    return make_response(p.as_dict(), 200)
 
 @app.route("/register", methods=["POST"])
 def register():
     p = PickleDataManager("devices.pickle")
     guid = str(get_guid())
-    p.save_data(guid)
+    device = Device(guid)
+    p.save_data(device)
     return make_response(json.dumps({'success':True}), 200, {'ContentType':'application/json'})
 
 @app.route("/issuetask", methods=["POST"])
 def issue():
+    p = PickleDataManager("devices.pickle")
+    guid = request.form.get("guid")
+    task = request.form.get("task")
+    device = p.get_device(guid)
+    if (device == None):
+        return make_response("Device not found", 400)    
+    device.tasks.append(task)
+    p.save_data(device)
     return make_response(json.dumps({'success':True}), 200, {'ContentType':'application/json'})
 
 @app.route("/listtasks", methods=["POST"])
 def list_tasks():
-    return make_response("task 1, task 2", 200)
+    p = PickleDataManager("devices.pickle")
+    guid = request.form.get("guid")
+    device = p.get_device(guid)
+    if (device == None):
+        return make_response("Device not found", 400)
+    return make_response([device.tasks, device.guid], 200)
 
 @app.errorhandler(404)
 def not_found(error):

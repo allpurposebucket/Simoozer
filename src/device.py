@@ -3,7 +3,7 @@ from helpers import get_guid
 class Device:
     def __init__(self, guid=None, tasks=[]):
         self.guid = guid
-        self.tasks = []
+        self.tasks = tasks if tasks is not None else []
         if not guid:
             self.guid = get_guid()
 
