@@ -1,0 +1,3 @@
+[submodule "Checkmar"]
+	path = Checkmar
+	url = https://github.com/allpurposebucket/Checkmar
