@@ -16,11 +16,8 @@ def home():
 
 @app.route("/devices", methods=["GET"])
 def list_devices():
-    devs = []
     p = PickleDataManager("devices.pickle")
-    for dev in p.get_devices():
-        devs.append(str(dev.guid))
-    return make_response(devs, 200)
+    return make_response(p.as_dict(), 200)
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -32,13 +29,21 @@ def register():
 
 @app.route("/issuetask", methods=["POST"])
 def issue():
+    p = PickleDataManager("devices.pickle")
+    guid = request.form.get("guid")
+    task = request.form.get("task")
+    print("User entered task: " + task)
+    device = p.get_device(guid)
+    print("Before: ", device.tasks)
+    device.tasks.append(task)
+    print(device.tasks)
+    p.save_data(device)
     return make_response(json.dumps({'success':True}), 200, {'ContentType':'application/json'})
 
 @app.route("/listtasks", methods=["POST"])
 def list_tasks():
     p = PickleDataManager("devices.pickle")
     guid = request.form.get("guid")
-    print("User entered guid="+guid)
     device = p.get_device(guid)
     if (device == None):
         return make_response("Device not found", 400)

@@ -7,37 +7,36 @@ class PickleDataManager:
         self.filename = path_prefix + filename
 
     def get_devices(self):
-        data = []
+        devices = {}
         try:
             with open(self.filename, 'rb') as f:
                 while True:
                     try:
-                        obj = pickle.load(f)
-                        data.append(obj)
+                        devices = pickle.load(f)
                     except EOFError:
                         break
         except FileNotFoundError:
             print("File not found")
-        return data
+            return devices
+        return devices
     
     def get_device(self, guid):
-        data = []
-        try:
-            with open(self.filename, 'rb') as f:
-                while True:
-                    try:
-                        obj = pickle.load(f)
-                        if str(obj.guid) == guid:
-                            return obj
-                        data.append(obj)
-                    except EOFError:
-                        break
-        except FileNotFoundError:
-            print("File not found")
+        devices = self.get_devices()
+        return devices[guid]
 
-    def save_data(self, data: any):
-        with open(self.filename, 'ab') as f:
-            pickle.dump(data, f)
+    def save_data(self, device):
+        print("Saving data: ", device.tasks)
+        devices = self.get_devices()
+        devices[device.guid] = device
+        print(len(devices))
+        with open(self.filename, 'wb') as f:
+            pickle.dump(devices, f)
+
+    def as_dict(self):
+        temp = {}
+        for k,v in self.get_devices().items():
+            temp[k] = v.__dict__
+        return temp
 
 def get_guid():
     return uuid.uuid4()
