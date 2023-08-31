@@ -22,13 +22,14 @@ class PickleDataManager:
     
     def get_device(self, guid):
         devices = self.get_devices()
-        return devices[guid]
+        try:
+            return devices[guid]
+        except KeyError:
+            return None
 
     def save_data(self, device):
-        print("Saving data: ", device.tasks)
         devices = self.get_devices()
         devices[device.guid] = device
-        print(len(devices))
         with open(self.filename, 'wb') as f:
             pickle.dump(devices, f)
 

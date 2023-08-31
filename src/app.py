@@ -32,11 +32,10 @@ def issue():
     p = PickleDataManager("devices.pickle")
     guid = request.form.get("guid")
     task = request.form.get("task")
-    print("User entered task: " + task)
     device = p.get_device(guid)
-    print("Before: ", device.tasks)
+    if (device == None):
+        return make_response("Device not found", 400)    
     device.tasks.append(task)
-    print(device.tasks)
     p.save_data(device)
     return make_response(json.dumps({'success':True}), 200, {'ContentType':'application/json'})
 
